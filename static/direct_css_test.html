@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct CSS Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+            line-height: 1.6;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .test-box {
+            width: 200px;
+            height: 200px;
+            background-color: #2ecc71;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 3px solid #27ae60;
+            text-align: center;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .test-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .info-box {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Direct CSS Test</h1>
+        
+        <div class="info-box">
+            <p>This is a direct HTML file with inline CSS. If you can see this page with proper styling, it means your browser is rendering CSS correctly.</p>
+        </div>
+        
+        <div class="test-box">
+            This is a test box with CSS styling
+        </div>
+        
+        <div class="info-box">
+            <p class="success">✓ If you can see a green box above with white text, CSS is working correctly in this file.</p>
+            <p>This test helps determine if the issue is with:</p>
+            <ul>
+                <li>Django's static files handling</li>
+                <li>Template inheritance issues</li>
+                <li>CSS file paths</li>
+                <li>CSS specificity or overrides</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

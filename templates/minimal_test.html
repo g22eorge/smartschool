@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal CSS Test</title>
+    <style>
+        /* Very simple reset */
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        
+        /* Test box - using important to force styles */
+        .test-box {
+            width: 100px;
+            height: 100px;
+            background-color: red !important;
+            color: white !important;
+            display: block !important;
+            margin: 20px 0;
+            padding: 10px;
+            border: 5px solid black !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Minimal CSS Test</h1>
+    
+    <p>This should be a red square with white text and black border:</p>
+    <div class="test-box">TEST BOX</div>
+    
+    <p>If you see a red box above, CSS is working. If not, there's a fundamental issue with CSS processing.</p>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #f0f0f0; border: 1px solid #ccc;">
+        <h3>Debug Information:</h3>
+        <p><strong>Page loaded at:</strong> <span id="load-time"></span></p>
+        <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+    </div>
+    
+    <script>
+        // Simple script to show debug info
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('load-time').textContent = new Date().toLocaleString();
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            
+            // Log styles
+            const box = document.querySelector('.test-box');
+            if (box) {
+                const styles = window.getComputedStyle(box);
+                console.log('=== Box Styles ===');
+                console.log('Display:', styles.display);
+                console.log('Width:', styles.width);
+                console.log('Height:', styles.height);
+                console.log('Background Color:', styles.backgroundColor);
+                console.log('Color:', styles.color);
+                console.log('Border:', styles.border);
+            } else {
+                console.error('Test box element not found');
+            }
+        });
+    </script>
+</body>
+</html>

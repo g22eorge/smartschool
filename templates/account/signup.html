@@ -1,0 +1,83 @@
+{% extends "account/base_allauth.html" %}
+{% load i18n %}
+{% load account socialaccount %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block card_header %}{% trans "Create Your Account" %}{% endblock %}
+
+{% block card_content %}
+    {% get_providers as socialaccount_providers %}
+
+    {% if socialaccount_providers %}
+        <p class="text-center mb-4">
+            {% blocktrans with site.name as site_name %}
+                Sign up with your {{ site_name }} account or use one of your social accounts.
+            {% endblocktrans %}
+        </p>
+
+        <div class="socialaccount_ballot mb-4">
+            <div class="d-grid gap-2">
+                {% include "socialaccount/snippets/provider_list.html" with process="signup" %}
+            </div>
+            <div class="text-center my-3">
+                <span class="bg-light px-3 text-muted">{% trans 'or' %}</span>
+            </div>
+        </div>
+
+        {% include "socialaccount/snippets/signup_extra.html" %}
+    {% else %}
+        <p class="text-center mb-4">
+            {% blocktrans %}
+                Already have an account? <a href="{{ login_url }}">Sign in here</a>.
+            {% endblocktrans %}
+        </p>
+    {% endif %}
+
+    <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form|crispy }}
+        
+        {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+        {% endif %}
+        
+        <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-user-plus me-2"></i>{% trans "Sign Up" %}
+            </button>
+        </div>
+    </form>
+    
+    {% if socialaccount_providers %}
+        <div class="mt-4">
+            <div class="position-relative">
+                <hr>
+                <div class="position-absolute top-50 start-50 translate-middle bg-white px-2">
+                    <small class="text-muted">{% trans "Or sign up with" %}</small>
+                </div>
+            </div>
+            
+            <div class="row g-2 mt-3">
+                <div class="col-12">
+                    {% include "socialaccount/snippets/provider_list.html" with process="signup" %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block card_footer %}
+    <div class="text-center">
+        <small class="text-muted">
+            {% trans "Already have an account?" %} 
+            <a href="{{ login_url }}" class="text-decoration-none">
+                {% trans "Sign In" %}
+            </a>
+        </small>
+        <div class="mt-6 grid grid-cols-2 gap-3">
+            {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </div>
+    </div>
+{% endblock %}

@@ -270,12 +270,11 @@ def scan_qr(request):
 
 @login_required
 def student_scan(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-        
-    if not request.user.is_student:
+    # Check if user has student attribute and is a student
+    if not hasattr(request.user, 'is_student') or not request.user.is_student:
         messages.error(request, 'Only students can access this page.')
-        return redirect('dashboard')
+        # Redirect to dashboard index if user is not a student
+        return redirect('dashboard:index')
         
     # Get active QR codes for the student's modules
     active_qr_codes = QRCode.objects.filter(
@@ -493,50 +492,209 @@ def scan_qr_code(request, qr_code):
         return JsonResponse({'success': False, 'message': f'An error occurred: {str(e)}'})
 
 def login_view(request):
+    # Debug: Print session and user info
+    print("\n=== LOGIN VIEW START ===")
+    print(f"Method: {request.method}")
+    print(f"User authenticated: {request.user.is_authenticated}")
+    print(f"Session key: {request.session.session_key if hasattr(request, 'session') else 'No session'}")
+    if hasattr(request, 'session'):
+        print(f"Session data: {dict(request.session.items())}")
+    
+    # Handle AJAX requests
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    next_url = request.POST.get('next') or request.GET.get('next', '')
+    
+    # If user is already authenticated, redirect them to appropriate page
     if request.user.is_authenticated:
-        # If user is already logged in, redirect based on their role
-        if request.user.is_superuser:
-            return redirect('dashboard:admin_dashboard')
+        print("User is already authenticated")
+        
+        # Force a new session to prevent session fixation
+        if hasattr(request, 'session') and request.session.session_key:
+            print(f"Existing session key: {request.session.session_key}")
+            # Keep the session data we want to preserve
+            session_data = dict(request.session.items())
+            # Clear the session
+            request.session.flush()
+            # Cycle the session key
+            request.session.cycle_key()
+            # Restore any necessary session data
+            for key, value in session_data.items():
+                if key.startswith('_auth_'):
+                    request.session[key] = value
+            print(f"New session key: {request.session.session_key}")
+        
+        # Determine redirect URL based on user type
+        if request.user.is_superuser or request.user.is_staff:
+            redirect_url = reverse('dashboard:admin_dashboard')
+            print("User is admin")
         elif hasattr(request.user, 'is_lecturer') and request.user.is_lecturer:
-            return redirect('dashboard:lecturer_dashboard')
-        elif hasattr(request.user, 'is_student') and request.user.is_student:
-            return redirect('dashboard:student_dashboard')
-        return redirect('dashboard:index')
+            redirect_url = reverse('dashboard:lecturer_dashboard')
+            print("User is lecturer")
+        else:
+            redirect_url = reverse('dashboard:student_dashboard')
+            print("User is student")
+        
+        # Check if next_url is safe and use it if it is
+        if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts=request.get_host()):
+            print(f"Using next URL: {next_url}")
+            redirect_url = next_url
+        
+        print(f"Redirecting to: {redirect_url}")
+        
+        if is_ajax:
+            return JsonResponse({
+                'success': True, 
+                'redirect': redirect_url,
+                'message': 'Login successful. Redirecting...'
+            })
+            
+        return redirect(redirect_url)
 
     if request.method == 'POST':
+        print("Processing POST request")
         form = AuthenticationForm(request, data=request.POST)
+        
         if form.is_valid():
             # Get the authenticated user from the form
             user = form.get_user()
+            print(f"Authenticated user: {user.username} (ID: {user.id})")
+            
+            # Ensure we have a clean session before login
+            request.session.flush()
+            
+            # Log in the user
             auth_login(request, user)
             
+            # Initialize session with user-specific data
+            request.session['user_id'] = str(user.id)
+            request.session['username'] = user.username
+            
+            print(f"User logged in, new session: {request.session.session_key}")
+            print(f"Session data after login: {request.session.items()}")
+            
             # Set a welcome message
-            messages.success(request, f'Welcome back, {user.get_full_name() or user.email}!')
+            welcome_msg = f'Welcome back, {user.get_full_name() or user.username}!' 
+            messages.success(request, welcome_msg)
+            print(f"Set welcome message: {welcome_msg}")
             
-            # Get the 'next' URL from the form or default to the dashboard
-            next_url = request.POST.get('next') or 'dashboard:index'
-            
-            # Redirect based on user role
-            if user.is_superuser:
-                return redirect('dashboard:admin_dashboard')
+            # Determine redirect URL based on user type
+            if user.is_superuser or user.is_staff:
+                redirect_url = reverse('dashboard:admin_dashboard')
+                print("User is admin")
             elif hasattr(user, 'is_lecturer') and user.is_lecturer:
-                return redirect('dashboard:lecturer_dashboard')
-            elif hasattr(user, 'is_student') and user.is_student:
-                return redirect('dashboard:student_dashboard')
-            return redirect('dashboard:index')
+                redirect_url = reverse('dashboard:lecturer_dashboard')
+                print("User is lecturer")
+            else:
+                redirect_url = reverse('dashboard:student_dashboard')
+                print("User is student")
+                
+            # Use next_url if it's safe
+            if next_url and url_has_allowed_host_and_scheme(url=next_url, allowed_hosts=request.get_host()):
+                print(f"Using next URL: {next_url}")
+                redirect_url = next_url
+            
+            if is_ajax:
+                return JsonResponse({'success': True, 'redirect': redirect_url})
+                
+            print(f"Redirecting to {redirect_url}")
+            return redirect(redirect_url)
         else:
-            messages.error(request, 'Invalid email or password. Please try again.')
-    else:
-        form = AuthenticationForm()
+            # Form is not valid
+            print(f"Form errors: {form.errors}")
+            if is_ajax:
+                return JsonResponse({
+                    'success': False, 
+                    'errors': form.errors,
+                    'message': 'Invalid username or password. Please try again.'
+                }, status=400)
+            
+    # If we get here, either it's a GET request or form validation failed
+    # Render the login form with any error messages
+    form = form if 'form' in locals() else AuthenticationForm()
     
-    return render(request, 'attendance/login.html', {
+    # Prepare the context with form and next URL
+    context = {
         'form': form,
-        'next': request.GET.get('next', '')
-    })
+        'next': next_url or request.GET.get('next', '')
+    }
+    
+    if is_ajax:
+        # For AJAX requests, return a JSON response with form HTML
+        from django.template.loader import render_to_string
+        form_html = render_to_string('attendance/login_form.html', context, request=request)
+        return JsonResponse({
+            'success': False,
+            'form_html': form_html,
+            'message': 'Please correct the errors below.'
+        }, status=400)
+    
+    # For regular form submission, render the full login page
+    return render(request, 'attendance/login.html', context)
+
+from django.contrib.auth import logout as auth_logout
+from django.utils.http import url_has_allowed_host_and_scheme
 
 def logout_view(request):
-    logout(request)
-    return redirect('attendance:login')
+    """
+    Log out the user and redirect to login page.
+    Handles both regular and AJAX logout requests safely.
+    """
+    try:
+        # Store the current path for redirecting back after login
+        next_page = request.GET.get('next') or request.POST.get('next')
+        
+        # Log out the user
+        if hasattr(request, 'user') and request.user.is_authenticated:
+            auth_logout(request)
+        
+        # Clear the session completely
+        if hasattr(request, 'session'):
+            request.session.flush()
+        
+        # Add a success message
+        messages.success(request, 'You have been successfully logged out.')
+        
+        # If this is an AJAX request, return a JSON response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'redirect': reverse('attendance:login') + (f'?next={next_page}' if next_page else '')
+            }, status=200)
+        
+        # For regular requests, redirect to login page
+        login_url = reverse('attendance:login')
+        if next_page and url_has_allowed_host_and_scheme(
+            url=next_page, 
+            allowed_hosts={request.get_host()}
+        ):
+            if '?' in login_url:
+                login_url += f'&next={next_page}'
+            else:
+                login_url += f'?next={next_page}'
+        
+        response = redirect(login_url)
+        return response
+        
+    except BrokenPipeError:
+        # Client disconnected before we could send the response
+        # This is not an error condition, so we can safely ignore it
+        return JsonResponse(
+            {'success': False, 'error': 'Connection closed'},
+            status=499  # Client Closed Request (non-standard but used by nginx)
+        )
+    except Exception as e:
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error during logout: {str(e)}", exc_info=True)
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse(
+                {'success': False, 'error': 'Logout failed'},
+                status=500
+            )
+        
+        # Redirect to login page with error message for regular requests
+        messages.error(request, 'An error occurred during logout. Please try again.')
+        return redirect('attendance:login')
 
 @login_required
 def session_detail(request, qrcode_id):

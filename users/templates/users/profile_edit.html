@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static crispy_forms_tags %}
+
+{% block title %}Edit Profile - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>
+                        Edit Profile
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <div class="mb-3">
+                                    {% if form.instance.profile_picture %}
+                                        <img id="profile-preview" 
+                                             src="{{ form.instance.profile_picture.url }}" 
+                                             alt="Profile Picture" 
+                                             class="img-fluid rounded-circle mb-3"
+                                             style="width: 200px; height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <div id="profile-default" class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" 
+                                             style="width: 200px; height: 200px; margin: 0 auto;">
+                                            <i class="fas fa-user fa-5x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="form-group">
+                                        <label for="id_profile_picture" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-upload me-1"></i> Change Photo
+                                            {{ form.profile_picture }}
+                                        </label>
+                                        <small class="form-text text-muted d-block">Max size: 2MB</small>
+                                        {% if form.profile_picture.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.profile_picture.errors|join:", " }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                {{ form.first_name|as_crispy_field }}
+                                {{ form.last_name|as_crispy_field }}
+                                {{ form.email|as_crispy_field }}
+                                {{ form.phone_number|as_crispy_field }}
+                                {{ form.date_of_birth|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form.bio|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'users:profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Preview profile picture before upload
+document.addEventListener('DOMContentLoaded', function() {
+    const profilePicInput = document.getElementById('id_profile_picture');
+    const profilePreview = document.getElementById('profile-preview');
+    const profileDefault = document.getElementById('profile-default');
+    
+    if (profilePicInput) {
+        profilePicInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    if (!profilePreview) {
+                        // Create preview element if it doesn't exist
+                        const preview = document.createElement('img');
+                        preview.id = 'profile-preview';
+                        preview.className = 'img-fluid rounded-circle mb-3';
+                        preview.style = 'width: 200px; height: 200px; object-fit: cover;';
+                        preview.alt = 'Profile Picture';
+                        
+                        const container = profilePicInput.closest('.form-group');
+                        container.insertBefore(preview, container.firstChild);
+                        
+                        if (profileDefault) {
+                            profileDefault.style.display = 'none';
+                        }
+                    }
+                    
+                    document.getElementById('profile-preview').src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}

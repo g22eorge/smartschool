@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}CSS Test{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">CSS Test Page</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        This page tests both inline styles and CSS classes to help diagnose styling issues.
+                    </div>
+                    
+                    <!-- Test Box with CSS Class -->
+                    <div class="test-box mb-4">
+                        This is a test box with CSS class
+                    </div>
+                    
+                    <!-- Test Box with Inline Styles -->
+                    <div style="
+                        width: 200px;
+                        height: 100px;
+                        background-color: #ff6b6b;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 20px auto;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    ">
+                        Inline style test
+                    </div>
+                    
+                    <!-- Test Box with Bootstrap Classes -->
+                    <div class="alert alert-success mt-4">
+                        <h4 class="alert-heading">Bootstrap Test</h4>
+                        <p>If you see styled buttons below, Bootstrap is working correctly.</p>
+                        <button class="btn btn-primary me-2">Primary Button</button>
+                        <button class="btn btn-success">Success Button</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add some custom styles */
+    .test-box {
+        width: 200px;
+        height: 200px;
+        background-color: #4CAF50;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px auto;
+        padding: 20px;
+        border-radius: 8px;
+        font-size: 20px;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: 3px solid #45a049;
+    }
+    
+    /* Override any conflicting styles */
+    .test-box {
+        background-color: #4CAF50 !important;
+    }
+</style>
+{% endblock %}

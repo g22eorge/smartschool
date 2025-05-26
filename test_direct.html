@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct HTML/CSS Test</title>
+    <style>
+        /* Reset all elements */
+        * {
+            all: unset;
+            display: revert;
+            box-sizing: border-box;
+        }
+        
+        /* Basic page styles */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            line-height: 1.5;
+            color: #333;
+            background-color: #fff;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        /* Test box with !important to force styles */
+        .test-box {
+            width: 150px !important;
+            height: 150px !important;
+            background-color: #FF0000 !important;  /* Red */
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 20px 0 !important;
+            font-weight: bold !important;
+            font-size: 18px !important;
+            border: 5px solid #000000 !important;
+        }
+        
+        /* Inline style test */
+        #inline-box {
+            width: 150px !important;
+            height: 150px !important;
+            background-color: #0000FF !important;  /* Blue */
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 20px 0 !important;
+            font-weight: bold !important;
+            font-size: 18px !important;
+            border: 5px solid #FF0000 !important;  /* Red */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Direct HTML/CSS Test</h1>
+        
+        <h2>Test 1: CSS Class</h2>
+        <p>This should be a red square with white text and black border:</p>
+        <div class="test-box">RED BOX</div>
+        
+        <h2>Test 2: Inline Styles</h2>
+        <p>This should be a blue square with white text and red border:</p>
+        <div id="inline-box" style="width: 100px; height: 100px; background-color: #0000FF; color: white; display: flex; align-items: center; justify-content: center; margin: 20px 0; font-weight: bold; font-size: 18px; border: 5px solid #FF0000;">
+            BLUE BOX
+        </div>
+        
+        <h2>Debug Information</h2>
+        <div style="margin-top: 30px; padding: 15px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;">
+            <p><strong>Page loaded at:</strong> <span id="load-time"></span></p>
+            <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        // Simple script to show debug info
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set debug info
+            document.getElementById('load-time').textContent = new Date().toLocaleString();
+            document.getElementById('user-agent').textContent = navigator.userAgent;
+            
+            // Log styles for debugging
+            function logElementInfo(selector, name) {
+                const el = document.querySelector(selector);
+                if (!el) {
+                    console.error('Element not found:', selector);
+                    return;
+                }
+                
+                const styles = window.getComputedStyle(el);
+                console.log(`\n=== ${name} Styles ===`);
+                console.log('Element:', el);
+                console.log('Display:', styles.display);
+                console.log('Width:', styles.width);
+                console.log('Height:', styles.height);
+                console.log('Background Color:', styles.backgroundColor);
+                console.log('Color:', styles.color);
+                console.log('Border:', styles.border);
+                console.log('Computed Styles:', styles);
+            }
+            
+            // Log info for our test elements
+            logElementInfo('.test-box', 'Red Box');
+            logElementInfo('#inline-box', 'Blue Box');
+            
+            // Check for common issues
+            console.log('\n=== Environment Checks ===');
+            console.log('document.documentMode:', document.documentMode || 'Not IE');
+            console.log('CSS.supports:', window.CSS ? 'CSS.supports is supported' : 'CSS.supports is NOT supported');
+            console.log('Flexbox supported:', CSS.supports('display', 'flex') ? 'Yes' : 'No');
+        });
+    </script>
+</body>
+</html>

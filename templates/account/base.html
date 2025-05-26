@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{% block head_title %}{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            {% block page_title %}{% endblock %}
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+            {% block page_subtitle %}{% endblock %}
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block account_content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if redirect_field_value %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const next = "{{ redirect_field_value }}";
+        if (next) {
+            const nextInput = document.createElement('input');
+            nextInput.type = 'hidden';
+            nextInput.name = '{{ redirect_field_name }}';
+            nextInput.value = next;
+            document.querySelector('form').appendChild(nextInput);
+        }
+    });
+</script>
+{% endif %}
+{% endblock %}

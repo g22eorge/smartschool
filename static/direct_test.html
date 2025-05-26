@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct HTML Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            padding: 20px; 
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-box {
+            width: 200px;
+            height: 200px;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+        .success {
+            color: #4CAF50;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Direct HTML Test</h1>
+        <p>This is a direct HTML file opened from your filesystem.</p>
+        
+        <div class="test-box">
+            GREEN BOX
+        </div>
+        
+        <div class="success">
+            ✓ If you see a green box, your browser can render HTML and CSS correctly.
+        </div>
+        
+        <h2>Next Steps:</h2>
+        <ol>
+            <li>If you see the green box, the issue is with your Django setup.</li>
+            <li>If you don't see the green box, try opening this file in a different browser.</li>
+            <li>If it works in another browser, clear your main browser's cache or try incognito mode.</li>
+        </ol>
+    </div>
+    
+    <script>
+        // Simple JavaScript to log environment info
+        console.log('Browser:', navigator.userAgent);
+        console.log('Viewport size:', window.innerWidth, 'x', window.innerHeight);
+    </script>
+</body>
+</html>

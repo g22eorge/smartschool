@@ -1,0 +1,21 @@
+{% extends "account/email/email_base.html" %}
+{% load i18n %}
+
+{% block email_title %}{% trans "Confirm Your Email Address" %}{% endblock %}
+
+{% block email_heading %}{% trans "Please Confirm Your Email" %}{% endblock %}
+
+{% block email_content %}
+    <p>{% blocktrans with site_name=current_site.name %}You're receiving this email because you or someone else has given your email address to register an account on {{ site_name }}.{% endblocktrans %}</p>
+    
+    <p>{% trans "To confirm this is correct, please click the button below:" %}</p>
+    
+    <div class="text-center">
+        <a href="{{ activate_url }}" class="button">{% trans "Confirm Email Address" %}</a>
+    </div>
+    
+    <p class="text-sm">{% blocktrans %}Or copy and paste this link into your browser:{% endblocktrans %}</p>
+    <p class="text-sm"><a href="{{ activate_url }}" style="word-break: break-all;">{{ activate_url }}</a></p>
+    
+    <p>{% trans "Thank you for using our site!" %}</p>
+{% endblock %}

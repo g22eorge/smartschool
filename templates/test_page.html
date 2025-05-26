@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSS Test Page</title>
+    <style>
+        /* Reset all elements */
+        * {
+            all: unset;
+            display: revert;
+            box-sizing: border-box;
+        }
+        
+        /* Base styles */
+        html, body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+            background-color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        /* Test container */
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        /* Test box with inline styles */
+        #inline-box {
+            width: 150px !important;
+            height: 150px !important;
+            background-color: #FF5722 !important;  /* Orange */
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 20px 0 !important;
+            font-weight: bold !important;
+            font-size: 18px !important;
+            border: 3px solid #000 !important;
+        }
+        
+        /* Test box with class */
+        .test-box {
+            width: 150px !important;
+            height: 150px !important;
+            background-color: #4CAF50 !important;  /* Green */
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 20px 0 !important;
+            font-weight: bold !important;
+            font-size: 18px !important;
+            border: 3px solid #000 !important;
+        }
+        
+        /* Debug info */
+        .debug-info {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>CSS Test Page</h1>
+        
+        <h2>Test 1: Inline Styles</h2>
+        <p>This should be an orange square with white text and black border:</p>
+        <div id="inline-box" style="width: 100px; height: 100px; background-color: #FF5722; color: white; display: flex; align-items: center; justify-content: center; margin: 20px 0; font-weight: bold; font-size: 18px; border: 3px solid #000;">
+            INLINE STYLES
+        </div>
+        
+        <h2>Test 2: CSS Class</h2>
+        <p>This should be a green square with white text and black border:</p>
+        <div class="test-box">
+            CSS CLASS
+        </div>
+        
+        <h2>JavaScript Test</h2>
+        <button id="testButton" style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin: 10px 0;">
+            Click Me to Test JavaScript
+        </button>
+        <div id="jsTestResult" style="margin: 10px 0; padding: 10px; background: #e9f7fe; border-left: 4px solid #2196F3;">
+            Click the button to test JavaScript
+        </div>
+        
+        <h2>Debug Information</h2>
+        <div class="debug-info">
+            <p><strong>Static URL:</strong> {{ static_url }}</p>
+            <p><strong>Static Root:</strong> {{ static_root }}</p>
+            <p><strong>Static Dirs:</strong> {{ static_dirs|join:", " }}</p>
+            <p><strong>File Exists:</strong> 
+                {% if file_exists %}
+                    <span style="color: green;">Yes</span>
+                {% else %}
+                    <span style="color: red;">No (STATIC_ROOT: {{ static_root }})</span>
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Enhanced JavaScript test with more logging
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== Page Loaded ===');
+            
+            // Log all styles for the test elements
+            function logElementStyles(element, name) {
+                if (!element) {
+                    console.error('Element not found:', name);
+                    return;
+                }
+                
+                const styles = window.getComputedStyle(element);
+                console.log(`\n=== ${name} Styles ===`);
+                console.log('Display:', styles.display);
+                console.log('Width:', styles.width);
+                console.log('Height:', styles.height);
+                console.log('Background Color:', styles.backgroundColor);
+                console.log('Color:', styles.color);
+                console.log('Visibility:', styles.visibility);
+                console.log('Opacity:', styles.opacity);
+                console.log('Position:', styles.position);
+                console.log('Z-Index:', styles.zIndex);
+            }
+            
+            // Log styles for our test elements
+            logElementStyles(document.getElementById('inline-box'), 'Inline Box');
+            logElementStyles(document.querySelector('.test-box'), 'Test Box');
+            
+            // Button click handler
+            const testButton = document.getElementById('testButton');
+            if (testButton) {
+                testButton.addEventListener('click', function() {
+                    const result = document.getElementById('jsTestResult');
+                    if (result) {
+                        result.innerHTML = '✅ JavaScript is working! <br>Check the console for detailed style information.';
+                        this.style.backgroundColor = '#1976D2';
+                    }
+                });
+            }
+            
+            // Log page information
+            console.log('\n=== Page Information ===');
+            console.log('URL:', window.location.href);
+            console.log('User Agent:', navigator.userAgent);
+            console.log('Viewport Size:', `${window.innerWidth}x${window.innerHeight}`);
+        });
+    </script>
+</body>
+</html>

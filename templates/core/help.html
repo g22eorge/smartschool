@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Help & Support - Smart School{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Help & Support</h1>
+            
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-blue-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700 dark:text-blue-300">
+                                Need help? Contact our support team at 
+                                <a href="mailto:support@smartschool.com" class="font-medium underline">support@smartschool.com</a>
+                                or call us at +1 (555) 123-4567.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if is_lecturer %}
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Lecturer Resources</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 class="font-medium text-gray-900 dark:text-white">Getting Started</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                Learn how to create your first attendance session and manage your classes.
+                            </p>
+                            <a href="#" class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">
+                                Read guide
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 class="font-medium text-gray-900 dark:text-white">Attendance Reports</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                How to generate and interpret attendance reports for your modules.
+                            </p>
+                            <a href="{% url 'dashboard:attendance_reports' %}" class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">
+                                View reports
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if is_student %}
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Student Resources</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 class="font-medium text-gray-900 dark:text-white">Marking Attendance</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                Learn how to mark your attendance using QR codes in class.
+                            </p>
+                            <a href="#" class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">
+                                View instructions
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h3 class="font-medium text-gray-900 dark:text-white">View Attendance</h3>
+                            <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                Check your attendance records and statistics.
+                            </p>
+                            <a href="{% url 'dashboard:student_dashboard' %}" class="mt-3 inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500">
+                                View attendance
+                                <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Frequently Asked Questions</h2>
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <h3 class="font-medium text-gray-900 dark:text-white">How do I reset my password?</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                You can reset your password by clicking on the "Forgot Password?" link on the login page.
+                            </p>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <h3 class="font-medium text-gray-900 dark:text-white">What should I do if I can't scan the QR code?</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Make sure you have a stable internet connection and that your camera has permission to access the QR code scanner. If the issue persists, please inform your lecturer.
+                            </p>
+                        </div>
+                        <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
+                            <h3 class="font-medium text-gray-900 dark:text-white">How can I view my attendance history?</h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                Navigate to your dashboard where you can view your attendance history and statistics for each module.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Still need help?</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                        Our support team is here to help you with any questions or issues you might have.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="mailto:support@smartschool.com" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Email Support
+                        </a>
+                        <a href="tel:+15551234567" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-phone-alt mr-2"></i>
+                            Call Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

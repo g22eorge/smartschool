@@ -2,6 +2,12 @@ from django.urls import path
 from . import views
 from .test_views import test_view
 from .simple_views import simple_test
+from .debug_views import debug_login, check_session
+from .test_login import test_login as test_login_view, test_session as test_session_view
+from .minimal_login import minimal_login, minimal_dashboard, minimal_session, minimal_logout
+from .direct_login import direct_login
+from .test_auth import test_login, test_session, test_logout
+from .minimal_auth import minimal_login, minimal_home, minimal_logout
 
 app_name = 'attendance'
 
@@ -26,4 +32,28 @@ urlpatterns = [
     path('test/', test_view, name='test_view'),
     path('simple/', simple_test, name='simple_test'),
     path('verify-biometric/', views.verify_biometric, name='verify_biometric'),
+    # Debug URLs
+    path('debug/login/', debug_login, name='debug_login'),
+    path('debug/session/', check_session, name='check_session'),
+    # Test login URLs (temporary for debugging)
+    path('test-login/', test_login, name='test_login'),
+    path('test-session/', test_session, name='test_session'),
+    # Minimal auth flow (bypasses most middleware)
+    path('minimal-login/', minimal_login, name='minimal_login'),
+    path('minimal-dashboard/', minimal_dashboard, name='minimal_dashboard'),
+    path('minimal-session/', minimal_session, name='minimal_session'),
+    path('minimal-logout/', minimal_logout, name='minimal_logout'),
+    
+    # Direct login (DEBUG only)
+    path('direct-login/', direct_login, name='direct_login'),
+    
+    # Test authentication endpoints
+    path('api/test/login/', test_login, name='test_login'),
+    path('api/test/session/', test_session, name='test_session'),
+    path('api/test/logout/', test_logout, name='test_logout'),
+    
+    # Minimal authentication flow
+    path('minimal/', minimal_login, name='minimal_login'),
+    path('minimal/home/', minimal_home, name='minimal_home'),
+    path('minimal/logout/', minimal_logout, name='minimal_logout'),
 ]

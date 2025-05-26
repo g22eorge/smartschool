@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% block head_title %}{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card mt-5">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">
+                        <i class="fas fa-user-circle me-2"></i>
+                        {% block card_header %}{% endblock %}
+                    </h1>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    {% block card_content %}
+                    {% endblock %}
+                </div>
+                <div class="card-footer text-muted text-center">
+                    {% block card_footer %}
+                        <small>
+                            {% blocktrans %}
+                                Need help? Contact our <a href="mailto:support@smartschool.com">support team</a>.
+                            {% endblocktrans %}
+                        </small>
+                    {% endblock %}
+                </div>
+            </div>
+            
+            {% block extra_content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+// Enable Bootstrap tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+
+// Enable Bootstrap popovers
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl);
+});
+
+// Add active class to current nav item
+var currentPath = window.location.pathname;
+document.querySelectorAll('.nav-link').forEach(function(link) {
+    if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+        link.setAttribute('aria-current', 'page');
+    }
+});
+
+// Handle form validation
+(function () {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}

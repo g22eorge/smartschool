@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load static %}
 {% load custom_filters %}
 
@@ -324,7 +325,22 @@
             </div>
         </section>
 
-        <!-- Stats Overview -->
+        <!-- 30-Day Attendance Trend -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="bg-white shadow overflow-hidden rounded-xl border border-gray-200 mb-8">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900">30-Day Attendance Trend</h2>
+                    <p class="mt-1 text-sm text-gray-600">Attendance statistics over the past 30 days</p>
+                </div>
+                <div class="p-6">
+                    <div class="h-80">
+                        <canvas id="attendanceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Active Sessions -->
@@ -1197,8 +1213,100 @@
                 }
             },
             
+            // Generate dummy data for 30-day attendance trend
+            generateAttendanceTrendData() {
+                const labels = [];
+                const presentData = [];
+                const absentData = [];
+                const totalStudents = 25; // Example total number of students
+                
+                // Generate data for the last 30 days
+                for (let i = 29; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    labels.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+                    
+                    // Generate random attendance data (70-95% attendance)
+                    const attendanceRate = 0.7 + Math.random() * 0.25;
+                    const present = Math.round(totalStudents * attendanceRate);
+                    presentData.push(present);
+                    absentData.push(totalStudents - present);
+                }
+                
+                return { labels, presentData, absentData };
+            },
+            
             // Initialize charts
             initializeCharts() {
+                // 30-Day Attendance Trend Chart
+                const trendData = this.generateAttendanceTrendData();
+                const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: trendData.labels,
+                        datasets: [
+                            {
+                                label: 'Present',
+                                data: trendData.presentData,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'Absent',
+                                data: trendData.absentData,
+                                borderColor: 'rgb(239, 68, 68)',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                borderWidth: 2,
+                                tension: 0.3,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: '#e5e7eb',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#6b7280',
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
                 // Attendance Overview Chart
                 this.attendanceChart = new Chart(
                     document.getElementById('attendanceChart'),
@@ -1347,6 +1455,11 @@
                 }
             },
             
+            // Copy QR code link to clipboard (alias for copyToClipboard)
+            copyQRCodeLink(link) {
+                return this.copyToClipboard(link);
+            },
+            
             // Set active tab
             setActive(tab) {
                 this.activeTab = tab;
@@ -1367,30 +1480,5 @@
     });
 </script>
 {% endblock %}
-</script>
-<script>
-    // Initialize pie chart
-    const pieCtx = document.getElementById('attendancePieChart').getContext('2d');
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: ['Present', 'Absent'],
-            datasets: [{
-                data: [85, 15],
-                backgroundColor: ['rgb(59, 130, 246)', 'rgb(239, 68, 68)']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: false
-                }
-            }
-        }
-    });
-</script>
+
 {% endblock %}

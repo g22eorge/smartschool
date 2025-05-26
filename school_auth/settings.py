@@ -160,15 +160,85 @@ LOGOUT_REDIRECT_URL = 'attendance:login'
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
     'attendance.auth_backend.CustomAuthBackend',
-    'django.contrib.auth.backends.ModelBackend',  # Keep this as fallback
 ]
 
 # Add logout URL to settings
 LOGOUT_URL = 'attendance:logout'
 
-
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login settings
+LOGIN_URL = 'attendance:login'
+LOGIN_REDIRECT_URL = 'dashboard:index'  # This will be used by the login view
+LOGOUT_REDIRECT_URL = 'attendance:login'
+
+# Session settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_SAMESITE = 'Lax'  # Helps with CSRF protection
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Use database-backed sessions
+SESSION_COOKIE_NAME = 'school_auth_sessionid'  # Custom session cookie name
+
+# Allow multiple logins from different browsers/tabs
+SESSION_COOKIE_PATH = '/;SameSite=Lax'  # Allow cross-tab sessions
+SESSION_COOKIE_SECURE = False  # Set to True in production
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Keep session alive
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+CSRF_USE_SESSIONS = False
+
+# Custom session serialization to handle multiple logins
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
+# Allow concurrent sessions (multiple logins for the same user)
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
+# Custom middleware to handle multiple sessions
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'attendance.middleware.SessionRefreshMiddleware',
+    'attendance.middleware.MultipleSessionsMiddleware',  # Add custom middleware
+]
+
+# Ensure the session is saved after every request
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'attendance.middleware.SessionRefreshMiddleware',  # Add this line
+]
+
+# Add this to your settings.py if not already present
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+# CSRF settings
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = True
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
+
+# Security settings (for development only, adjust for production)
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# Email settings (for password reset, etc.)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Print emails to console
+
+# Custom user model (if you have one)
+# AUTH_USER_MODEL = 'accounts.CustomUser'

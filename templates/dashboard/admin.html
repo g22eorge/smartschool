@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% load humanize %}
 {% load math_filters %}
 
@@ -78,8 +79,11 @@
 <div class="container mx-auto px-4 py-6">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-        <p class="text-gray-600 dark:text-gray-300">Welcome back, {{ request.user.get_full_name|default:request.user.username }}. Here's what's happening today.</p>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+            <p class="text-gray-600 dark:text-gray-300">Welcome back, {{ request.user.get_full_name|default:request.user.username }}. Here's what's happening today.</p>
+        </div>
+        </div>
     </div>
 
     <!-- Stats Grid -->
@@ -279,7 +283,7 @@
                             <p class="text-sm text-gray-500">{{ module.enrolled_students }} students</p>
                         </div>
                         <span class="px-2 py-1 text-xs rounded-full {% if module.attendance_rate >= 80 %}bg-green-100 text-green-800{% elif module.attendance_rate >= 60 %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
-                            {{ module.attendance_rate }}%
+                            {{ module.attendance_rate|floatformat:0 }}%
                         </span>
                     </div>
                     <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
@@ -346,7 +350,11 @@
     <!-- Quick Actions -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <a href="/admin/" class="flex flex-col items-center justify-center p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors group">
+                <i class="fas fa-cog text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium">Admin Interface</span>
+            </a>
             <a href="{% url 'admin:core_user_add' %}" class="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                 <i class="fas fa-user-plus text-blue-600 dark:text-blue-400 text-2xl mb-2"></i>
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Add Student</span>
