@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+<<<<<<< HEAD
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -54,15 +55,27 @@ def root_redirect(request):
     
     # Default fallback
     return redirect('dashboard:index')
+=======
+
+from core.views import HomeView
+
+# Root redirect is now handled by HomeView's get method
+>>>>>>> 821b5fb96f3e7a78459d76f33fbbe8c7be9c1045
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('dashboard/', include('dashboard.urls')),
-    path('attendance/', include('attendance.urls')),
-    path('core/', include('core.urls')),
-    path('', root_redirect, name='root_redirect'),
-    path('accounts/login/', RedirectView.as_view(url='/attendance/login/')),  # For admin redirects
-    path('accounts/profile/', RedirectView.as_view(url='/')),  # For admin redirects
+    path('dashboard/', include('dashboard.urls', namespace='dashboard')),
+    path('attendance/', include('attendance.urls', namespace='attendance')),
+    path('core/', include('core.urls', namespace='core')),
+    path('', HomeView.as_view(), name='home'),
+    path('accounts/login/', RedirectView.as_view(url='/attendance/login/'), name='login_redirect'),
+    path('accounts/profile/', RedirectView.as_view(url='/'), name='profile_redirect'),
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')),
+]
+
+# Add URL for favicon.ico to prevent 404 errors
+urlpatterns += [
+    path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'img/favicon.ico')),
 ]
 
 # Serve static and media files in development
