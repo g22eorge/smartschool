@@ -350,11 +350,7 @@
     <!-- Quick Actions -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <a href="/admin/" class="flex flex-col items-center justify-center p-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors group">
-                <i class="fas fa-cog text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
-                <span class="text-sm font-medium">Admin Interface</span>
-            </a>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
             <a href="{% url 'admin:core_user_add' %}" class="flex flex-col items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
                 <i class="fas fa-user-plus text-blue-600 dark:text-blue-400 text-2xl mb-2"></i>
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Add Student</span>
@@ -366,10 +362,6 @@
             <a href="{% url 'admin:attendance_module_add' %}" class="flex flex-col items-center justify-center p-4 bg-purple-50 dark:bg-purple-900/30 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors">
                 <i class="fas fa-book text-purple-600 dark:text-purple-400 text-2xl mb-2"></i>
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Create Module</span>
-            </a>
-            <a href="{% url 'admin:index' %}" class="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <i class="fas fa-cog text-gray-600 dark:text-gray-300 text-2xl mb-2"></i>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Admin Panel</span>
             </a>
         </div>
     </div>

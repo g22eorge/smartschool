@@ -19,6 +19,7 @@ from io import BytesIO
 import uuid
 from datetime import timedelta
 from django.db.models import Count, F, Q, ExpressionWrapper, FloatField
+from django.urls import resolve
 
 User = get_user_model()
 from attendance.models import Module, QRCode, Attendance
@@ -1186,3 +1187,65 @@ def student_attendance_records(request):
         logger.error(f"Error in student_attendance_records view: {str(e)}", exc_info=True)
         messages.error(request, 'An error occurred while loading your attendance records.')
         return redirect('dashboard:student_dashboard')
+
+
+@login_required
+def student_profile(request):
+    """
+    Display and allow editing of the student's profile information.
+    """
+    if not hasattr(request.user, 'is_student') or not request.user.is_student:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('dashboard:index')
+    
+    # Get the student's enrolled modules
+    enrolled_modules = request.user.enrolled_modules.all().order_by('code')
+    
+    # Get attendance statistics
+    attendance_records = Attendance.objects.filter(student=request.user)
+    total_sessions = attendance_records.count()
+    present_count = attendance_records.filter(status='present').count()
+    attendance_percentage = (present_count / total_sessions * 100) if total_sessions > 0 else 0
+    
+    context = {
+        'page_title': 'My Profile',
+        'active_tab': 'profile',
+        'enrolled_modules': enrolled_modules,
+        'total_sessions': total_sessions,
+        'present_count': present_count,
+        'attendance_percentage': round(attendance_percentage, 1),
+        'user': request.user
+    }
+    
+    return render(request, 'dashboard/student_profile.html', context)
+
+
+@login_required
+def lecturer_profile(request):
+    """
+    Display and allow editing of the lecturer's profile information.
+    """
+    if not hasattr(request.user, 'is_lecturer') or not request.user.is_lecturer:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('dashboard:index')
+    
+    # Get the lecturer's teaching modules
+    teaching_modules = request.user.modules.all().order_by('code')
+    
+    # Get session statistics
+    now = timezone.now()
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    sessions_this_month = QRCode.objects.filter(
+        lecturer=request.user,
+        created_at__gte=start_of_month
+    ).count()
+    
+    context = {
+        'page_title': 'My Profile',
+        'active_tab': 'profile',
+        'teaching_modules': teaching_modules,
+        'sessions_this_month': sessions_this_month,
+        'user': request.user
+    }
+    
+    return render(request, 'dashboard/lecturer_profile.html', context)

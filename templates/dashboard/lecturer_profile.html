@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Lecturer Dashboard - Smart School Attendance{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+        border-radius: 0.5rem;
+    }
+    .profile-picture {
+        width: 120px;
+        height: 120px;
+        border: 4px solid white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .stats-card {
+        transition: all 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .module-badge {
+        transition: all 0.2s ease;
+    }
+    .module-badge:hover {
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Profile Header -->
+    <div class="profile-header p-6 mb-8 text-white">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="mb-4 md:mb-0 md:mr-8">
+                <div class="profile-picture rounded-full bg-white flex items-center justify-center text-4xl font-bold text-blue-800">
+                    {{ user.get_initials|default:user.username|slice:':2'|upper }}
+                </div>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl md:text-3xl font-bold">{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-blue-100 mt-1">{{ user.email }}</p>
+                <div class="mt-3 flex flex-wrap justify-center md:justify-start gap-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        Lecturer
+                    </span>
+                    {% if user.is_staff %}
+                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                        Staff
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Total Sessions -->
+        <div class="stats-card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                    <i class="fas fa-calendar-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Sessions This Month</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ sessions_this_month }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teaching Modules -->
+        <div class="stats-card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                    <i class="fas fa-book text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Teaching Modules</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ teaching_modules.count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Status -->
+        <div class="stats-card bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                    <i class="fas fa-user-shield text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Account Status</p>
+                    <p class="text-2xl font-semibold text-gray-900">Active</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-xs text-gray-500">Last login: {{ user.last_login|date:"M d, Y H:i"|default:"Never" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teaching Modules Section -->
+    <div class="bg-white shadow rounded-lg overflow-hidden mb-8">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Teaching Modules</h2>
+            <p class="mt-1 text-sm text-gray-500">Modules you are currently teaching</p>
+        </div>
+        <div class="p-6">
+            {% if teaching_modules %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for module in teaching_modules %}
+                        <a href="{% url 'dashboard:module_detail' module.id %}" 
+                           class="module-badge p-4 border rounded-lg hover:shadow-md transition-shadow">
+                            <h3 class="font-medium text-gray-900">{{ module.code }}: {{ module.name }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                {{ module.students.count }} students enrolled
+                            </p>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <p class="text-gray-500">You are not teaching any modules yet.</p>
+                    <a href="{% url 'dashboard:lecturer_dashboard' %}" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Create New Module
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Account Information -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Account Information</h2>
+            <p class="mt-1 text-sm text-gray-500">Your personal and account details</p>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Full Name</h3>
+                    <p class="mt-1 text-gray-900">{{ user.get_full_name|default:"Not provided" }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Email Address</h3>
+                    <p class="mt-1 text-gray-900">{{ user.email }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Username</h3>
+                    <p class="mt-1 text-gray-900">{{ user.username }}</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500">Account Created</h3>
+                    <p class="mt-1 text-gray-900">{{ user.date_joined|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <button class="text-blue-600 hover:text-blue-800 text-sm font-medium focus:outline-none">
+                    <i class="fas fa-edit mr-1"></i> Edit Profile
+                </button>
+                <button class="ml-4 text-blue-600 hover:text-blue-800 text-sm font-medium focus:outline-none"
+                        onclick="alert('Password change functionality coming soon!')">
+                    <i class="fas fa-key mr-1"></i> Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add any interactive elements here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize any JavaScript functionality here
+    });
+</script>
+{% endblock %}

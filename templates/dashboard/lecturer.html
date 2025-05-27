@@ -5,6 +5,11 @@
 
 {% block title %}Lecturer Dashboard - Smart School Attendance{% endblock %}
 
+{% block extra_head %}
+{{ block.super }}
+<!-- Additional head content specific to lecturer dashboard -->
+{% endblock %}
+
 {% block extra_css %}
 <style>
     /* Layout */
@@ -273,45 +278,123 @@
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-100" x-data="lecturerDashboard">
-    <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-900">Lecturer Dashboard</h1>
-            <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-500">Welcome, {{ request.user.get_full_name|default:request.user.username }}</span>
-                <a href="{% url 'attendance:logout' %}" class="text-sm text-red-600 hover:text-red-800">Logout</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+<div class="min-h-screen bg-gray-100">
+    {% if not user.is_authenticated %}
+    <div class="text-center py-12">
+        <p class="text-lg text-gray-600">Please <a href="{% url 'attendance:login' %}" class="text-blue-600 hover:underline">log in</a> to access the lecturer dashboard.</p>
+    </div>
+    {% else %}
+    <!-- Header with Profile Dropdown -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
+                <!-- Logo -->
                 <div class="flex items-center">
-                    <a href="#" class="flex items-center">
+                    <a href="{% url 'dashboard:lecturer_dashboard' %}" class="flex items-center">
                         <i class="fas fa-graduation-cap text-2xl text-blue-600 mr-2"></i>
                         <span class="text-xl font-bold text-gray-900">SmartSchool</span>
                     </a>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Overview</a>
-                    <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Modules</a>
-                    <a href="#attendance" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Attendance</a>
-                    <a href="#reports" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Reports</a>
-                    <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600">Settings</a>
-                    
-                    <div class="ml-4 relative">
-                        <button type="button" class="flex items-center text-sm rounded-full focus:outline-none" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="{% url 'dashboard:lecturer_dashboard' %}" 
+                       class="px-3 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name == 'lecturer_dashboard' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-100{% endif %}">
+                        <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                    </a>
+                    <a href="#modules" 
+                       class="px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-book mr-1"></i> Modules
+                    </a>
+                    <a href="#attendance" 
+                       class="px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-calendar-check mr-1"></i> Attendance
+                    </a>
+                    <a href="#reports" 
+                       class="px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-chart-bar mr-1"></i> Reports
+                    </a>
+                </div>
+
+                <!-- Profile dropdown -->
+                <div class="ml-4 flex items-center md:ml-6">
+                    <div class="relative profile-dropdown">
+                        <button type="button" 
+                                class="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" 
+                                id="user-menu-button" 
+                                aria-expanded="false" 
+                                aria-haspopup="true"
+                                aria-controls="user-menu">
                             <span class="sr-only">Open user menu</span>
-                            <img class="h-8 w-8 rounded-full" src="https://ui-avatars.com/api/?name={{ request.user.get_full_name|urlencode }}&background=3B82F6&color=fff" alt="User avatar">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                                {{ request.user.get_initials|default:request.user.username|slice:':2'|upper }}
+                            </div>
+                            <span class="ml-2 text-sm font-medium text-gray-700 hidden md:inline-flex items-center">
+                                {{ request.user.get_short_name|default:request.user.username }}
+                                <i class="fas fa-chevron-down ml-1 text-xs text-gray-500"></i>
+                            </span>
                         </button>
+
+                        <!-- Dropdown menu -->
+                        <div id="user-menu"
+                             class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transition-all duration-100 ease-in-out transform opacity-0 scale-95"
+                             role="menu" 
+                             aria-orientation="vertical" 
+                             aria-labelledby="user-menu-button" 
+                             tabindex="-1">
+                            <a href="{% url 'dashboard:lecturer_profile' %}" 
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                               role="menuitem"
+                               tabindex="-1">
+                                <i class="fas fa-user-circle w-5 mr-2 inline-block"></i>
+                                My Profile
+                            </a>
+                            <a href="#" 
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" 
+                               role="menuitem"
+                               tabindex="-1"
+                               onclick="event.preventDefault(); alert('Password change functionality coming soon!');">
+                                <i class="fas fa-key w-5 mr-2 inline-block"></i>
+                                Change Password
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="{% url 'attendance:logout' %}" 
+                               class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50" 
+                               role="menuitem"
+                               tabindex="-1">
+                                <i class="fas fa-sign-out-alt w-5 mr-2 inline-block"></i>
+                                Sign out
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </nav>
+
+        <!-- Mobile menu button -->
+        <div class="md:hidden flex items-center justify-between px-4 py-3 border-t border-gray-200">
+            <a href="{% url 'dashboard:lecturer_dashboard' %}" 
+               class="flex flex-col items-center px-2 py-1 text-xs font-medium {% if request.resolver_match.url_name == 'lecturer_dashboard' %}text-blue-600{% else %}text-gray-600{% endif %}">
+                <i class="fas fa-tachometer-alt text-lg mb-1"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#modules" 
+               class="flex flex-col items-center px-2 py-1 text-xs font-medium text-gray-600">
+                <i class="fas fa-book text-lg mb-1"></i>
+                <span>Modules</span>
+            </a>
+            <a href="#attendance" 
+               class="flex flex-col items-center px-2 py-1 text-xs font-medium text-gray-600">
+                <i class="fas fa-calendar-check text-lg mb-1"></i>
+                <span>Attendance</span>
+            </a>
+            <a href="#reports" 
+               class="flex flex-col items-center px-2 py-1 text-xs font-medium text-gray-600">
+                <i class="fas fa-chart-bar text-lg mb-1"></i>
+                <span>Reports</span>
+            </a>
+        </div>
+    </header>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -903,9 +986,9 @@
             </div>
     </main>
 </div>
+{% endif %}
 
-<!-- Alpine.js for interactivity -->
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.10.3/dist/cdn.min.js" defer></script>
+
 
 <script>
     // Smooth scrolling for anchor links
@@ -939,11 +1022,64 @@
 </script>
 
 {% block extra_js %}
+<!-- Chart.js for attendance charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('lecturerDashboard', () => ({
+// Initialize lecturer dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile Dropdown Functionality
+    const profileDropdowns = document.querySelectorAll('.profile-dropdown');
+    
+    function toggleDropdown(button, menu, show) {
+        const isOpen = show !== undefined ? show : !menu.classList.contains('hidden');
+        
+        if (isOpen) {
+            menu.classList.remove('hidden', 'opacity-0', 'scale-95');
+            menu.classList.add('opacity-100', 'scale-100');
+            button.setAttribute('aria-expanded', 'true');
+        } else {
+            menu.classList.remove('opacity-100', 'scale-100');
+            menu.classList.add('opacity-0', 'scale-95');
+            setTimeout(function() {
+                if (!menu.classList.contains('opacity-100')) {
+                    menu.classList.add('hidden');
+                }
+            }, 150);
+            button.setAttribute('aria-expanded', 'false');
+        }
+    }
+    
+    // Initialize all dropdowns
+    profileDropdowns.forEach(function(dropdown) {
+        const button = dropdown.querySelector('button[aria-expanded]');
+        const menu = dropdown.querySelector('#user-menu');
+        
+        if (button && menu) {
+            // Toggle on button click
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleDropdown(button, menu);
+            });
+            
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target)) {
+                    toggleDropdown(button, menu, false);
+                }
+            });
+            
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    toggleDropdown(button, menu, false);
+                }
+            });
+        }
+    });
+    
+    // Initialize lecturer dashboard functionality
+    var lecturerDashboard = {
             // QR Code Generation
             moduleId: '',
             expirationMinutes: 30,
@@ -1471,12 +1607,60 @@
                     });
                 }
             }
-        }));
-    });
+        };
+    };
     
-    // Initialize tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize any tooltips here if needed
+    // Initialize tooltips if Bootstrap is available
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    
+    // Tooltip initialization
+    if (window.bootstrap && bootstrap.Tooltip) {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+    
+    // QR Code functionality
+    var qrCodeButtons = document.querySelectorAll('.copy-qr-btn');
+    qrCodeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var qrUrl = button.getAttribute('data-qr-url');
+            if (qrUrl) {
+                navigator.clipboard.writeText(qrUrl).then(function() {
+                    // Show success message
+                    var Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: function(toast) {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                    
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'QR Code link copied!'
+                    });
+                }).catch(function(error) {
+                    console.error('Failed to copy QR code:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Failed to copy',
+                        text: 'Please try again or copy the link manually',
+                        confirmButtonColor: '#3b82f6',
+                    });
+                });
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -15,12 +15,14 @@ urlpatterns = [
     
     # Student dashboard (handle with and without trailing slash)
     path('student/', views.student_dashboard, name='student_dashboard'),
+    path('student/profile/', views.student_profile, name='student_profile'),
     path('student/schedule/', views.student_schedule, name='student_schedule'),
     path('student/attendance/', views.student_attendance_records, name='attendance_records'),
     re_path(r'^student$', RedirectView.as_view(url='/dashboard/student/', permanent=True)),
     
     # Lecturer dashboard
     path('lecturer/', views.lecturer_dashboard, name='lecturer_dashboard'),
+    path('lecturer/profile/', views.lecturer_profile, name='lecturer_profile'),
     re_path(r'^lecturer$', RedirectView.as_view(url='/dashboard/lecturer/', permanent=True)),
     
     # API Endpoints

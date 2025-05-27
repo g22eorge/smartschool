@@ -1,10 +1,7 @@
 from django.urls import path
-from . import views
-<<<<<<< HEAD
-from .views_help import help_view
-=======
 from django.views.generic import RedirectView
->>>>>>> 821b5fb96f3e7a78459d76f33fbbe8c7be9c1045
+from . import views
+from .views_help import help_view
 
 app_name = 'core'
 

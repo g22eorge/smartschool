@@ -279,12 +279,28 @@
                      class="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                      style="display: none;">
                     <div class="py-1" role="menu" aria-orientation="vertical">
+                        {% if user.is_student %}
+                        <a href="{% url 'dashboard:student_profile' %}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                           role="menuitem">
+                            <i class="fas fa-user-circle w-5 mr-2 inline-block"></i>
+                            My Profile
+                        </a>
+                        {% elif user.is_lecturer %}
+                        <a href="{% url 'dashboard:lecturer_profile' %}" 
+                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                           role="menuitem">
+                            <i class="fas fa-user-circle w-5 mr-2 inline-block"></i>
+                            My Profile
+                        </a>
+                        {% else %}
                         <a href="{% url 'core:profile' %}" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                            role="menuitem">
                             <i class="fas fa-user-circle w-5 mr-2 inline-block"></i>
                             My Profile
                         </a>
+                        {% endif %}
                         <a href="{% url 'core:change_password' %}" 
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                            role="menuitem">
@@ -449,6 +465,13 @@
                                class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 group">
                                 <i class="fas fa-tachometer-alt w-5 mr-3 text-gray-500 dark:text-gray-400"></i>
                                 Dashboard
+                            </a>
+                            
+                            <!-- Student Profile Link -->
+                            <a href="{% url 'dashboard:student_profile' %}" 
+                               class="flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white group">
+                                <i class="fas fa-user-circle w-5 mr-3 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300"></i>
+                                My Profile
                             </a>
                             <a href="{% url 'attendance:student_scan' %}" 
                                class="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
