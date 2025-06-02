@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - SmartSchool{% endblock %}
+
+{% block extra_head %}
+<style>
+    /* Base styles */
+    :root {
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --secondary: #10b981;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --bg-light: #f9fafb;
+        --bg-dark: #111827;
+        --card-bg: #ffffff;
+        --card-bg-dark: #1f2937;
+        --border-light: #e5e7eb;
+        --border-dark: #374151;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Dark mode overrides */
+    .dark {
+        --text-primary: #f9fafb;
+        --text-secondary: #9ca3af;
+        --bg-light: #111827;
+        --bg-dark: #030712;
+        --card-bg: #1f2937;
+        --border-light: #374151;
+        --border-dark: #4b5563;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+
+    .login-container {
+        max-width: 28rem;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--bg-light);
+    }
+    
+    .login-card {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        width: 100%;
+        border: 1px solid var(--border-light);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .login-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+    }
+    
+    .login-logo {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .login-logo img {
+        height: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .login-title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.025em;
+        background: linear-gradient(90deg, var(--primary), #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.9375rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-light);
+        border-radius: 0.75rem;
+        background-color: var(--bg-light);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .form-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .form-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+    }
+    
+    .form-input:focus {
+        outline: none;
+        border-color: var(--primary-500);
+        box-shadow: 0 0 0 3px var(--primary-100);
+    }
+    
+    .btn-primary {
+        display: block;
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        background: linear-gradient(135deg, var(--primary), #7c3aed);
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-700);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .btn-primary:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+    }
+    
+    .login-footer {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-light);
+        color: var(--text-secondary);
+        font-size: 0.9375rem;
+        line-height: 1.6;
+    }
+
+    .login-footer a {
+        color: var(--primary-600);
+        font-weight: 500;
+        text-decoration: none;
+    }
+    
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Dark mode overrides */
+    :root {
+        --card-bg: #ffffff;
+        --text-primary: #111827;
+        --text-secondary: #374151;
+        --text-tertiary: #6b7280;
+        --border-color: #d1d5db;
+        --input-bg: #f9fafb;
+        --primary-100: #dbeafe;
+        --primary-500: #3b82f6;
+        --primary-600: #2563eb;
+        --primary-700: #1d4ed8;
+    }
+    
+    .dark {
+        --card-bg: #1f2937;
+        --text-primary: #f9fafb;
+        --text-secondary: #e5e7eb;
+        --text-tertiary: #9ca3af;
+        --border-color: #4b5563;
+        --input-bg: #374151;
+        --primary-100: rgba(96, 165, 250, 0.1);
+        --primary-500: #60a5fa;
+        --primary-600: #3b82f6;
+        --primary-700: #2563eb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="{% static 'img/logo.svg' %}" alt="SmartSchool">
+                <h1 class="login-title">Sign in to your account</h1>
+            </div>
+
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                <div class="p-4 rounded-md {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200{% else %}bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200{% endif %}">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                            {% else %}
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">
+                                {{ message }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'attendance:login' %}" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" id="username" class="form-input" required autocomplete="username">
+                    {% if form.username.errors %}
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <div class="flex items-center justify-between">
+                        <label for="password" class="form-label">Password</label>
+                        <a href="#" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+                            Forgot password?
+                        </a>
+                    </div>
+                    <input type="password" name="password" id="password" class="form-input" required autocomplete="current-password">
+                    {% if form.password.errors %}
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center">
+                    <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600">
+                    <label for="remember_me" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                        Remember me
+                    </label>
+                </div>
+                
+                <div>
+                    <button type="submit" class="btn-primary">
+                        Sign in
+                    </button>
+                </div>
+            </form>
+            
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#" class="font-medium">Contact support</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+    // Change the icons inside the button based on previous settings
+    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        document.documentElement.classList.remove('dark');
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+
+    // Toggle theme
+    themeToggle.addEventListener('click', function() {
+        // Toggle icons
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+
+        // Toggle theme
+        if (document.documentElement.classList.contains('dark')) {
+            document.documentElement.classList.remove('dark');
+            localStorage.setItem('color-theme', 'light');
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.setItem('color-theme', 'dark');
+        }
+    });
+
+    // Auto-dismiss messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        const messages = document.querySelectorAll('.message');
+        messages.forEach(function(message) {
+            setTimeout(function() {
+                message.style.opacity = '0';
+                setTimeout(function() {
+                    message.style.display = 'none';
+                }, 300);
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %}
